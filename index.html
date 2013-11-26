@@ -1,0 +1,66 @@
+<html>
+  <head>
+    <!-- Include Our WebGL JS file -->
+    <script src="WebGL.js" type="text/javascript"></script>
+    <script>
+      //This will hold our WebGL variable
+      var GL;
+
+      //Our finished texture
+      var Texture;
+
+      //This will hold the textures image
+      var TextureImage;
+
+      function Ready(){
+      GL = new WebGL("GLCanvas", "FragmentShader", "VertexShader");
+      TextureImage = new Image();
+      TextureImage.onload = function(){
+      Texture = GL.LoadTexture(TextureImage);
+      setInterval(Update, 33);
+      };
+      TextureImage.src = "Dirt.jpg";
+      }
+
+      function Update(){
+      GL.GL.clear(16384 | 256);
+      GL.Draw(Cube, Texture);
+      }
+    </script>
+  </head>
+  <body onload="Ready()">
+    <canvas id="GLCanvas" width="720" height="480">
+      Your Browser Doesn't Support HTML5's Canvas.
+    </canvas>
+
+    <script id="VertexShader" type="x-shader/x-vertex">
+
+      attribute highp vec3 VertexPosition;
+      attribute highp vec2 TextureCoord;
+
+
+      uniform highp mat4 TransformationMatrix;
+      uniform highp mat4 PerspectiveMatrix;
+
+      varying highp vec2 vTextureCoord;
+
+      void main(void) {
+      gl_Position = PerspectiveMatrix * TransformationMatrix * vec4(VertexPosition, 1.0);
+      vTextureCoord = TextureCoord;
+      }
+    </script>
+
+    <script id="FragmentShader" type="x-shader/x-fragment">
+      varying highp vec2 vTextureCoord;
+
+      uniform sampler2D uSampler;
+
+      void main(void) {
+      highp vec4 texelColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
+      gl_FragColor = texelColor;
+      }
+    </script>
+
+
+  </body>
+</html>
